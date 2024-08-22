@@ -16,6 +16,12 @@
             @realTime="realTime"
             v-if="visible"
           />
+          <!-- <cropper 
+          ref="cropper"
+          class="cropper"
+          :src="options.img"
+          @change="realTime"
+          ></cropper> -->
         </el-col>
         <el-col :xs="24" :md="12" :style="{ height: '350px' }">
           <div class="avatar-upload-preview">
@@ -59,10 +65,13 @@
 </template>
 
 <script setup>
+// import 'vue-advanced-cropper/dist/style.css';
+// import { Cropper } from 'vue-advanced-cropper'
 import "vue-cropper/dist/index.css";
 import { VueCropper } from "vue-cropper";
 import { uploadAvatar } from "@/api/system/user";
 import useUserStore from "@/store/modules/user";
+import { convertImgPath } from '@/utils/cdn'
 
 const userStore = useUserStore();
 const { proxy } = getCurrentInstance();
@@ -133,7 +142,8 @@ function uploadImg() {
     formData.append("avatarfile", data, options.filename);
     uploadAvatar(formData).then(response => {
       open.value = false;
-      options.img = import.meta.env.VITE_APP_BASE_API + response.imgUrl;
+      //import.meta.env.VITE_APP_BASE_API + response.imgUrl
+      options.img = convertImgPath(response.imgUrl);
       userStore.avatar = options.img;
       proxy.$modal.msgSuccess("修改成功");
       visible.value = false;
